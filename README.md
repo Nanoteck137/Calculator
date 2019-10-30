@@ -6,12 +6,12 @@ C# WPF Framework
 
 Problem:<br>
 Skapa en Miniräknare.<br>
-Så för att skapa en miniräknare behöver man på något sätt ha någon slags input som behövs bearbetning på något sätt.
+Så för att skapa en miniräknare behöver man på något sätt ha någon slags input som behövs bearbetning på något sätt. 
 
 Sätt att lösa problemet:<br>
-En sätt är att bara gå igenom en sträng och parse ut ett nummer ordning och sedan se vilken operator som är efter numret. Problem med denna methoden är att "operator precedence" är ett problem och kommer inte att fungera.
+En sätt är att bara gå igenom en sträng och parse ut ett nummer ordning och sedan se vilken operator som är efter numret. Problem med denna methoden är att "operator precedence" är ett problem och kommer inte att fungera. Men det här sättet kräver inte lika mycket kod.
 
-Ett annat sätt är att skapa en riktigt LL(1) parser för att den ska lösa problemet med "operator precedence" och det kommer att vara enklare att fixa andra saker som till exempel "SQRT" functionen. 
+Ett annat sätt är att skapa en riktigt LL(1) parser för att den ska lösa problemet med "operator precedence" och det kommer att vara enklare att fixa andra saker som till exempel "SQRT" functionen. Men detta sättet kräver ganska mycket kod.
 
 Klasser:
 
