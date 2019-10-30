@@ -22,10 +22,11 @@ namespace Calculator
     {
         private string[,] buttonNames =
         {
-            { "1", "2", "3", "+" },
-            { "4", "5", "6", "-" },
-            { "7", "8", "9", "*" },
-            { "C", "0", "=", "/" },
+            { "1",    "2", "3", "+" },
+            { "4",    "5", "6", "-" },
+            { "7",    "8", "9", "*" },
+            { "C",    "0", "=", "/" },
+            { "SQRT", "(", ")", "%" },
         };
 
         private Lexer lexer;
@@ -56,6 +57,7 @@ namespace Calculator
             this.grid.RowDefinitions.Add(new RowDefinition());
             this.grid.RowDefinitions.Add(new RowDefinition());
             this.grid.RowDefinitions.Add(new RowDefinition());
+            this.grid.RowDefinitions.Add(new RowDefinition());
 
             resultLabel = new Label
             {
@@ -75,7 +77,7 @@ namespace Calculator
             {
                 for (int x = 0; x < buttonNames.GetLength(0); x++)
                 {
-                    string name = buttonNames[y, x];
+                    string name = buttonNames[x, y];
                     Button button = new Button() { Content = name };
                     button.FontSize = 20.0;
 
@@ -88,8 +90,8 @@ namespace Calculator
                         button.Click += DefaultButtonClick;
                     }
 
-                    Grid.SetColumn(button, x);
-                    Grid.SetRow(button, y + yOffset);
+                    Grid.SetRow(button, x + yOffset);
+                    Grid.SetColumn(button, y);
 
                     this.grid.Children.Add(button);
                 }
