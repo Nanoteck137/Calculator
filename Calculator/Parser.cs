@@ -43,17 +43,50 @@ namespace Calculator
 
         public Node ParseOperand()
         {
+            if (lexer.CurrentToken == TokenType.NUMBER)
+            {
+                ulong value = lexer.CurrentNumber;
+                lexer.NextToken();
+                return new NumberNode(value);
+            }
+
+            Debug.Assert(false);
             return null;
         }
 
         public Node ParseMul()
         {
-            return null;
+            Node left = ParseOperand();
+            while (lexer.CurrentToken == TokenType.MULTIPLY ||
+                lexer.CurrentToken == TokenType.DIVIDE ||
+                lexer.CurrentToken == TokenType.MODULO)
+            {
+                TokenType op = lexer.CurrentToken;
+                lexer.NextToken();
+
+                Node right = ParseOperand();
+
+                left = new BinaryOpNode(left, right, op);
+            }
+
+            return left;
         }
 
         public Node ParseAdd()
         {
-            return null;
+            Node left = ParseMul();
+            while (lexer.CurrentToken == TokenType.PLUS ||
+                lexer.CurrentToken == TokenType.MINUS)
+            {
+                TokenType op = lexer.CurrentToken;
+                lexer.NextToken();
+
+                Node right = ParseMul();
+
+                left = new BinaryOpNode(left, right, op);
+            }
+
+            return left;
         }
 
         public Node Parse()
