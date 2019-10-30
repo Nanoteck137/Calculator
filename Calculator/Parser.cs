@@ -9,19 +9,19 @@ namespace Calculator
 {
     abstract class Node
     {
-        public abstract ulong GenerateNumber();
+        public abstract double GenerateNumber();
     }
 
     class NumberNode : Node
     {
-        public ulong Value { get; private set; }
+        public double Value { get; private set; }
 
-        public NumberNode(ulong value)
+        public NumberNode(double value)
         {
             this.Value = value;
         }
 
-        public override ulong GenerateNumber()
+        public override double GenerateNumber()
         {
             return this.Value;
         }
@@ -40,10 +40,10 @@ namespace Calculator
             this.Op = op;
         }
 
-        public override ulong GenerateNumber()
+        public override double GenerateNumber()
         {
-            ulong leftValue = this.Left.GenerateNumber();
-            ulong rightValue = this.Right.GenerateNumber();
+            double leftValue = this.Left.GenerateNumber();
+            double rightValue = this.Right.GenerateNumber();
 
             switch (this.Op)
             {
@@ -59,6 +59,8 @@ namespace Calculator
         }
     }
 
+    class SyntaxErrorException : Exception { }
+
     class Parser
     {
         private Lexer lexer;
@@ -72,9 +74,26 @@ namespace Calculator
         {
             if (lexer.CurrentToken == TokenType.NUMBER)
             {
-                ulong value = lexer.CurrentNumber;
+                double value = lexer.CurrentNumber;
                 lexer.NextToken();
                 return new NumberNode(value);
+            }
+            else if (lexer.CurrentToken == TokenType.OPEN_PAREN)
+            {
+                lexer.NextToken();
+
+                Node result = Parse();
+
+                if (lexer.CurrentToken != TokenType.CLOSE_PAREN)
+                {
+                    throw new SyntaxErrorException();
+                }
+                else
+                {
+                    lexer.NextToken();
+                }
+
+                return result;
             }
 
             Debug.Assert(false);

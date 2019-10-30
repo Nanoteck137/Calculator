@@ -61,7 +61,7 @@ namespace Calculator
 
             resultLabel = new Label
             {
-                Content = "",
+                Content = "(2+4)*2",
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalContentAlignment = HorizontalAlignment.Right,
                 FontSize = 40.0
@@ -131,7 +131,7 @@ namespace Calculator
 
             lexer.Reset(labelStr);
             Node node = parser.Parse();
-            ulong result = node.GenerateNumber();
+            double result = node.GenerateNumber();
 
             Console.WriteLine("DEBUG: Calculation Result - '{0}'", result);
 
