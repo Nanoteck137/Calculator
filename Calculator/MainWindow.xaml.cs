@@ -24,9 +24,13 @@ namespace Calculator
         {
             InitializeComponent();
 
-            Lexer lexer = new Lexer("123+");
+            Lexer lexer = new Lexer("1+4*2");
             lexer.NextToken();
-            lexer.NextToken();
+
+            Parser parser = new Parser(lexer);
+
+            Node node = parser.Parse();
+            ulong res = node.GenerateNumber();
         }
     }
 }

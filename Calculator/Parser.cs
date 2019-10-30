@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Calculator
 {
-    abstract class Node { }
+    abstract class Node
+    {
+        public abstract ulong GenerateNumber();
+    }
 
     class NumberNode : Node
     {
@@ -15,6 +19,11 @@ namespace Calculator
         public NumberNode(ulong value)
         {
             this.Value = value;
+        }
+
+        public override ulong GenerateNumber()
+        {
+            return this.Value;
         }
     }
 
@@ -29,6 +38,24 @@ namespace Calculator
             this.Left = left;
             this.Right = right;
             this.Op = op;
+        }
+
+        public override ulong GenerateNumber()
+        {
+            ulong leftValue = this.Left.GenerateNumber();
+            ulong rightValue = this.Right.GenerateNumber();
+
+            switch (this.Op)
+            {
+                case TokenType.PLUS: return leftValue + rightValue;
+                case TokenType.MINUS: return leftValue - rightValue;
+                case TokenType.MULTIPLY: return leftValue * rightValue;
+                case TokenType.DIVIDE: return leftValue / rightValue;
+                case TokenType.MODULO: return leftValue % rightValue;
+                default:
+                    Debug.Assert(false);
+                    return 0;
+            }
         }
     }
 
