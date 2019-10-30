@@ -24,7 +24,8 @@ namespace Calculator
         {
             InitializeComponent();
 
-            Lexer lexer = new Lexer("123");
+            Lexer lexer = new Lexer("123+");
+            lexer.NextToken();
             lexer.NextToken();
         }
     }

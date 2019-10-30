@@ -40,6 +40,12 @@ namespace Calculator
             CurrentToken = TokenType.UNKNOWN;
             CurrentNumber = 0;
 
+            if (ptr >= text.Length)
+            {
+                CurrentToken = TokenType.EOS;
+                return;
+            }
+
             char current = text[ptr];
             ptr++;
 
