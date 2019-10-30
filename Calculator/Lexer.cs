@@ -32,13 +32,26 @@ namespace Calculator
 
         public Lexer(string text)
         {
+            Reset(text);
+        }
+
+        public void Reset(string text)
+        {
             this.text = text;
+            this.ptr = 0;
+
+            NextToken();
+        }
+
+        private void ResetToken()
+        {
+            CurrentToken = TokenType.UNKNOWN;
+            CurrentNumber = 0;
         }
 
         public void NextToken()
         {
-            CurrentToken = TokenType.UNKNOWN;
-            CurrentNumber = 0;
+            ResetToken();
 
             if (ptr >= text.Length)
             {

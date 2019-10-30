@@ -1,20 +1,20 @@
 ﻿Calculator
 
 
-winexe
+exe
 C#
 .cs
-W:\Calculator\Calculator\obj\Debug\
+C:\Programming\Calculator\Calculator\obj\Debug\
 Calculator
 none
 false
 DEBUG;TRACE
-W:\Calculator\Calculator\App.xaml
+C:\Programming\Calculator\Calculator\App.xaml
 11151548125
 
-8217446220
+8-1389898305
 13-1505183044
 MainWindow.xaml;
 
-False
+True
 
