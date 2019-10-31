@@ -27,6 +27,39 @@ namespace Calculator
         }
     }
 
+    class SQRTNode : Node
+    {
+        public Node Value { get; private set; }
+
+        public SQRTNode(Node value)
+        {
+            this.Value = value;
+        }
+
+        public override double GenerateNumber()
+        {
+            double val = this.Value.GenerateNumber();
+            return Math.Sqrt(val);
+        }
+    }
+
+    class POWNode : Node
+    {
+        public double Value { get; private set; }
+        public double Power { get; private set; }
+
+        public POWNode(double value, double power)
+        {
+            this.Value = value;
+            this.Power = power;
+        }
+
+        public override double GenerateNumber()
+        {
+            return Math.Pow(this.Value, this.Power);
+        }
+    }
+
     class BinaryOpNode : Node
     {
         public Node Left { get; private set; }
@@ -74,6 +107,16 @@ namespace Calculator
             {
                 double value = lexer.CurrentNumber;
                 lexer.NextToken();
+
+                if (lexer.CurrentToken == TokenType.POWER)
+                {
+                    lexer.NextToken();
+
+                    double power = lexer.CurrentNumber;
+                    lexer.ExpectToken(TokenType.NUMBER);
+
+                    return new POWNode(value, power);
+                }
                 return new NumberNode(value);
             }
             else if (lexer.CurrentToken == TokenType.OPEN_PAREN)
@@ -85,6 +128,23 @@ namespace Calculator
                 lexer.ExpectToken(TokenType.CLOSE_PAREN);
 
                 return result;
+            }
+            else if (lexer.CurrentToken == TokenType.IDENTIFIER)
+            {
+                string identifier = lexer.CurrentIdentifier;
+                lexer.NextToken();
+
+                if (lexer.CurrentToken == TokenType.OPEN_PAREN)
+                {
+                    lexer.NextToken();
+
+                    Node node = Parse();
+                    SQRTNode result = new SQRTNode(node);
+
+                    lexer.ExpectToken(TokenType.CLOSE_PAREN);
+
+                    return result;
+                }
             }
 
             Debug.Assert(false);

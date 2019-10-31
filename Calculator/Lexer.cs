@@ -23,6 +23,8 @@ namespace Calculator
         DIVIDE,
         MODULO,
 
+        POWER,
+
         OPEN_PAREN,
         CLOSE_PAREN,
 
@@ -95,6 +97,7 @@ namespace Calculator
                 case '*': CurrentToken = TokenType.MULTIPLY; break;
                 case '/': CurrentToken = TokenType.DIVIDE; break;
                 case '%': CurrentToken = TokenType.MODULO; break;
+                case '^': CurrentToken = TokenType.POWER; break;
                 case '(': CurrentToken = TokenType.OPEN_PAREN; break;
                 case ')': CurrentToken = TokenType.CLOSE_PAREN; break;
                 default:

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,10 +23,11 @@ namespace Calculator
     {
         private string[,] buttonNames =
         {
+            { "C", "", "<", "" },
             { "1",    "2", "3", "+" },
             { "4",    "5", "6", "-" },
             { "7",    "8", "9", "*" },
-            { "C",    "0", "=", "/" },
+            { "^",     "0", "=", "/" },
             { "SQRT", "(", ")", "%" },
         };
 
@@ -41,23 +43,18 @@ namespace Calculator
             lexer = new Lexer("");
             parser = new Parser(lexer);
 
-            Dictionary<string, RoutedEventHandler> customClick = new Dictionary<string, RoutedEventHandler>
+
+
+            for (int i = 0; i < buttonNames.GetLength(1); i++)
             {
-                { "C", ClearButtonClick },
-                { "=", EqualsButtonClick }
-            };
-
-            this.grid.ColumnDefinitions.Add(new ColumnDefinition());
-            this.grid.ColumnDefinitions.Add(new ColumnDefinition());
-            this.grid.ColumnDefinitions.Add(new ColumnDefinition());
-            this.grid.ColumnDefinitions.Add(new ColumnDefinition());
+                this.grid.ColumnDefinitions.Add(new ColumnDefinition());
+            }
 
             this.grid.RowDefinitions.Add(new RowDefinition());
-            this.grid.RowDefinitions.Add(new RowDefinition());
-            this.grid.RowDefinitions.Add(new RowDefinition());
-            this.grid.RowDefinitions.Add(new RowDefinition());
-            this.grid.RowDefinitions.Add(new RowDefinition());
-            this.grid.RowDefinitions.Add(new RowDefinition());
+            for (int i = 0; i < buttonNames.GetLength(0); i++)
+            {
+                this.grid.RowDefinitions.Add(new RowDefinition());
+            }
 
             resultLabel = new Label
             {
@@ -71,13 +68,26 @@ namespace Calculator
             Grid.SetColumnSpan(resultLabel, 4);
             this.grid.Children.Add(resultLabel);
 
-            int yOffset = 1;
+            CreateButtons();
+        }
 
-            for (int y = 0; y < buttonNames.GetLength(1); y++)
+        private void CreateButtons()
+        {
+            Dictionary<string, RoutedEventHandler> customClick = new Dictionary<string, RoutedEventHandler>()
             {
-                for (int x = 0; x < buttonNames.GetLength(0); x++)
+                { "C", ClearButtonClick },
+                { "<", BackButtonClick },
+                { "=", EqualsButtonClick }
+            };
+
+            for (int y = 0; y < buttonNames.GetLength(0); y++)
+            {
+                for (int x = 0; x < buttonNames.GetLength(1); x++)
                 {
-                    string name = buttonNames[x, y];
+                    string name = buttonNames[y, x];
+                    if (name == "")
+                        continue;
+
                     Button button = new Button() { Content = name };
                     button.FontSize = 20.0;
 
@@ -90,22 +100,17 @@ namespace Calculator
                         button.Click += DefaultButtonClick;
                     }
 
-                    Grid.SetRow(button, x + yOffset);
-                    Grid.SetColumn(button, y);
+                    if (name == "C" || name == "<")
+                    {
+                        Grid.SetColumnSpan(button, 2);
+                    }
+
+                    Grid.SetRow(button, y + 1);
+                    Grid.SetColumn(button, x);
 
                     this.grid.Children.Add(button);
                 }
             }
-
-            /*
-            Lexer lexer = new Lexer("1+4*2");
-            lexer.NextToken();
-
-            Parser parser = new Parser(lexer);
-
-            Node node = parser.Parse();
-            ulong res = node.GenerateNumber();
-            */
         }
 
         private void DefaultButtonClick(object sender, RoutedEventArgs e)
@@ -118,9 +123,20 @@ namespace Calculator
             resultLabel.Content = resultStr;
         }
 
+
+
         private void ClearButtonClick(object sender, RoutedEventArgs e)
         {
             resultLabel.Content = "";
+        }
+
+        private void BackButtonClick(object sender, RoutedEventArgs e)
+        {
+            string str = (string)resultLabel.Content;
+            if (str.Length > 0)
+            {
+                resultLabel.Content = str.Substring(0, str.Length - 1);
+            }
         }
 
         private void EqualsButtonClick(object sender, RoutedEventArgs e)
@@ -135,7 +151,7 @@ namespace Calculator
 
             Console.WriteLine("DEBUG: Calculation Result - '{0}'", result);
 
-            resultLabel.Content = result.ToString();
+            resultLabel.Content = result.ToString(CultureInfo.InvariantCulture);
         }
     }
 }
