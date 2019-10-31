@@ -59,8 +59,6 @@ namespace Calculator
         }
     }
 
-    class SyntaxErrorException : Exception { }
-
     class Parser
     {
         private Lexer lexer;
@@ -84,14 +82,7 @@ namespace Calculator
 
                 Node result = Parse();
 
-                if (lexer.CurrentToken != TokenType.CLOSE_PAREN)
-                {
-                    throw new SyntaxErrorException();
-                }
-                else
-                {
-                    lexer.NextToken();
-                }
+                lexer.ExpectToken(TokenType.CLOSE_PAREN);
 
                 return result;
             }

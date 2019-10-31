@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 
 namespace Calculator
 {
+    class SyntaxErrorException : Exception { }
+
     enum TokenType
     {
         UNKNOWN,
@@ -58,6 +60,18 @@ namespace Calculator
             CurrentToken = TokenType.UNKNOWN;
             CurrentNumber = 0;
             CurrentIdentifier = "";
+        }
+
+        public void ExpectToken(TokenType expected)
+        {
+            if (CurrentToken != expected)
+            {
+                throw new SyntaxErrorException();
+            }
+            else
+            {
+                NextToken();
+            }
         }
 
         public void NextToken()
