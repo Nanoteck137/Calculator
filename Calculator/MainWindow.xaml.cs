@@ -1,18 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Calculator
 {
@@ -45,17 +35,15 @@ namespace Calculator
             lexer = new Lexer("");
             parser = new Parser(lexer);
 
-            for (int i = 0; i < buttonNames.GetLength(1); i++)
-            {
-                this.grid.ColumnDefinitions.Add(new ColumnDefinition());
-            }
+            int numCols = buttonNames.GetLength(1);
+            int numRows = buttonNames.GetLength(0);
+            SetupGrid(numCols, numRows);
+            SetupResultLabel();
+            CreateButtons();
+        }
 
-            this.grid.RowDefinitions.Add(new RowDefinition());
-            for (int i = 0; i < buttonNames.GetLength(0); i++)
-            {
-                this.grid.RowDefinitions.Add(new RowDefinition());
-            }
-
+        private void SetupResultLabel()
+        {
             resultLabel = new Label
             {
                 Content = "(2+4)*2",
@@ -67,8 +55,19 @@ namespace Calculator
             Grid.SetRow(resultLabel, 0);
             Grid.SetColumnSpan(resultLabel, 4);
             this.grid.Children.Add(resultLabel);
+        }
 
-            CreateButtons();
+        private void SetupGrid(int numCols, int numRows)
+        {
+            for (int i = 0; i < numCols; i++)
+            {
+                this.grid.ColumnDefinitions.Add(new ColumnDefinition());
+            }
+
+            for (int i = 0; i < numRows; i++)
+            {
+                this.grid.RowDefinitions.Add(new RowDefinition());
+            }
         }
 
         private void CreateButtons()
