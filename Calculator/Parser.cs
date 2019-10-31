@@ -119,6 +119,15 @@ namespace Calculator
                 }
                 return new NumberNode(value);
             }
+            else if (lexer.CurrentToken == TokenType.MINUS)
+            {
+                lexer.NextToken();
+
+                double value = lexer.CurrentNumber;
+                lexer.ExpectToken(TokenType.NUMBER);
+
+                return new NumberNode(-value);
+            }
             else if (lexer.CurrentToken == TokenType.OPEN_PAREN)
             {
                 lexer.NextToken();
@@ -147,7 +156,6 @@ namespace Calculator
                 }
             }
 
-            Debug.Assert(false);
             return null;
         }
 

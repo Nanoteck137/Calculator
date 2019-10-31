@@ -36,14 +36,14 @@ namespace Calculator
 
         private Label resultLabel;
 
+        bool error = false;
+
         public MainWindow()
         {
             InitializeComponent();
 
             lexer = new Lexer("");
             parser = new Parser(lexer);
-
-
 
             for (int i = 0; i < buttonNames.GetLength(1); i++)
             {
@@ -115,6 +115,12 @@ namespace Calculator
 
         private void DefaultButtonClick(object sender, RoutedEventArgs e)
         {
+            if (error)
+            {
+                resultLabel.Content = "";
+                error = false;
+            }
+
             Button button = (Button)sender;
             string labelStr = (string)resultLabel.Content;
             string buttonStr = (string)button.Content;
@@ -122,8 +128,6 @@ namespace Calculator
             string resultStr = labelStr + buttonStr;
             resultLabel.Content = resultStr;
         }
-
-
 
         private void ClearButtonClick(object sender, RoutedEventArgs e)
         {
@@ -146,12 +150,25 @@ namespace Calculator
             Console.WriteLine("DEBUG: Calculation String - '{0}'", labelStr);
 
             lexer.Reset(labelStr);
-            Node node = parser.Parse();
-            double result = node.GenerateNumber();
+            try
+            {
+                Node node = parser.Parse();
+                double result = node.GenerateNumber();
+                if (double.IsPositiveInfinity(result) || double.IsNegativeInfinity(result))
+                {
+                    error = true;
+                }
 
-            Console.WriteLine("DEBUG: Calculation Result - '{0}'", result);
+                Console.WriteLine("DEBUG: Calculation Result - '{0}'", result);
 
-            resultLabel.Content = result.ToString(CultureInfo.InvariantCulture);
+                resultLabel.Content = result.ToString(CultureInfo.InvariantCulture);
+            }
+            catch (Exception)
+            {
+                error = true;
+                resultLabel.Content = "SYNTAX ERROR";
+                Console.WriteLine("DEBUG: Calculation Error");
+            }
         }
     }
 }
