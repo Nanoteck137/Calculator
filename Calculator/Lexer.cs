@@ -98,6 +98,7 @@ namespace Calculator
                 case '(': CurrentToken = TokenType.OPEN_PAREN; break;
                 case ')': CurrentToken = TokenType.CLOSE_PAREN; break;
                 default:
+                    // NOTE(patrik): Parse an identifier
                     if (char.IsLetter(current))
                     {
                         builder.Append(current);
@@ -112,6 +113,7 @@ namespace Calculator
                         CurrentToken = TokenType.IDENTIFIER;
                         builder.Clear();
                     }
+                    // NOTE(patrik): Parse a number
                     else if (char.IsDigit(current))
                     {
                         // Format: 1: 123 2: 123.3

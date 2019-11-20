@@ -11,20 +11,22 @@ namespace Calculator
     /// </summary>
     public partial class MainWindow : Window
     {
+        private const int MAX_CHARACTERS_IN_RESULT = 22;
+
         private string[,] buttonNames =
         {
-            { "C", "", "<", "" },
-            { "1",    "2", "3", "+" },
-            { "4",    "5", "6", "-" },
-            { "7",    "8", "9", "*" },
-            { "^",     "0", "=", "/" },
-            { "SQRT", "(", ")", "%" },
+            { "C",    "",   "<",  ""  },
+            { "1",    "2",  "3",  "+" },
+            { "4",    "5",  "6",  "-" },
+            { "7",    "8",  "9",  "*" },
+            { "^",    "0",  "=",  "/" },
+            { "SQRT", "(",  ")",  "%" },
         };
 
         private Lexer lexer;
         private Parser parser;
 
-        private Label resultLabel;
+        private TextBlock resultLabel;
 
         bool error = false;
 
@@ -36,7 +38,7 @@ namespace Calculator
             parser = new Parser(lexer);
 
             int numCols = buttonNames.GetLength(1);
-            int numRows = buttonNames.GetLength(0);
+            int numRows = buttonNames.GetLength(0) + 1;
             SetupGrid(numCols, numRows);
             SetupResultLabel();
             CreateButtons();
@@ -44,13 +46,16 @@ namespace Calculator
 
         private void SetupResultLabel()
         {
-            resultLabel = new Label
+            resultLabel = new TextBlock
             {
-                Content = "(2+4)*2",
+                Text = "",
                 VerticalAlignment = VerticalAlignment.Center,
-                HorizontalContentAlignment = HorizontalAlignment.Right,
-                FontSize = 40.0
+                TextAlignment = TextAlignment.Right,
+                TextWrapping = TextWrapping.WrapWithOverflow,
+
+                FontSize = 40.0,
             };
+
             Grid.SetColumn(resultLabel, 0);
             Grid.SetRow(resultLabel, 0);
             Grid.SetColumnSpan(resultLabel, 4);
@@ -61,7 +66,12 @@ namespace Calculator
         {
             for (int i = 0; i < numCols; i++)
             {
-                this.grid.ColumnDefinitions.Add(new ColumnDefinition());
+                ColumnDefinition def = new ColumnDefinition
+                {
+                    MaxWidth = 200.0
+                };
+
+                this.grid.ColumnDefinitions.Add(def);
             }
 
             for (int i = 0; i < numRows; i++)
@@ -89,6 +99,8 @@ namespace Calculator
 
                     Button button = new Button() { Content = name };
                     button.FontSize = 20.0;
+                    button.MinWidth = 100.0;
+                    button.MinHeight = 40.0;
 
                     if (customClick.ContainsKey(name))
                     {
@@ -112,60 +124,89 @@ namespace Calculator
             }
         }
 
+        private bool IsOperator(char c)
+        {
+            return (c == '+') || (c == '-') || (c == '*') || (c == '/') || (c == '%');
+        }
+
         private void DefaultButtonClick(object sender, RoutedEventArgs e)
         {
             if (error)
             {
-                resultLabel.Content = "";
+                resultLabel.Text = "";
                 error = false;
             }
 
+            if (resultLabel.Text.Length >= MAX_CHARACTERS_IN_RESULT)
+                return;
+
             Button button = (Button)sender;
-            string labelStr = (string)resultLabel.Content;
+            string labelStr = resultLabel.Text;
             string buttonStr = (string)button.Content;
 
+            // NOTE(patrik): Check if theres already a operator at the end of the label
+            if (IsOperator(buttonStr[0]))
+            {
+                // NOTE(patrik): If theres a operator in the end of the string dont add another
+                if (labelStr.Length > 0 && IsOperator(labelStr[labelStr.Length - 1]))
+                {
+                    return;
+                }
+                // NOTE(patrik): Check if the label is empty so the user cant add an operator in the beginning of the label
+                else if (labelStr.Length == 0 && IsOperator(buttonStr[0]))
+                {
+                    if (buttonStr[0] != '-')
+                        return;
+                }
+            }
+
             string resultStr = labelStr + buttonStr;
-            resultLabel.Content = resultStr;
+            resultLabel.Text = resultStr;
         }
 
         private void ClearButtonClick(object sender, RoutedEventArgs e)
         {
-            resultLabel.Content = "";
+            resultLabel.Text = "";
         }
 
         private void BackButtonClick(object sender, RoutedEventArgs e)
         {
-            string str = (string)resultLabel.Content;
+            string str = resultLabel.Text;
             if (str.Length > 0)
             {
-                resultLabel.Content = str.Substring(0, str.Length - 1);
+                resultLabel.Text = str.Substring(0, str.Length - 1);
             }
         }
 
         private void EqualsButtonClick(object sender, RoutedEventArgs e)
         {
             // TODO(patrik): Do the calculation here
-            string labelStr = (string)resultLabel.Content;
+            string labelStr = resultLabel.Text;
             Console.WriteLine("DEBUG: Calculation String - '{0}'", labelStr);
 
             lexer.Reset(labelStr);
             try
             {
+                // NOTE(patrik): Try to do the calculations
                 Node node = parser.Parse();
                 double result = node.GenerateNumber();
+
+                // NOTE(patrik): Check if theres an error in generating the number
                 if (double.IsPositiveInfinity(result) || double.IsNegativeInfinity(result))
                 {
                     error = true;
+                    return;
                 }
 
                 Console.WriteLine("DEBUG: Calculation Result - '{0}'", result);
 
-                resultLabel.Content = result.ToString(CultureInfo.InvariantCulture);
+                resultLabel.Text = result.ToString(CultureInfo.InvariantCulture);
             }
-            catch (Exception)
+            catch (SyntaxErrorException)
             {
+                // NOTE(patrik): Generate an error to the user
                 error = true;
-                resultLabel.Content = "SYNTAX ERROR";
+                resultLabel.Text = "SYNTAX ERROR";
                 Console.WriteLine("DEBUG: Calculation Error");
             }
         }

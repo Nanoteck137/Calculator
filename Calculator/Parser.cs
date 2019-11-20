@@ -5,6 +5,10 @@ namespace Calculator
 {
     abstract class Node
     {
+        /// <summary>
+        /// Generate the a number from the inerited classes
+        /// </summary>
+        /// <returns>The number that the classes generates</returns>
         public abstract double GenerateNumber();
     }
 
@@ -99,8 +103,12 @@ namespace Calculator
 
         public Node ParseOperand()
         {
+            //NOTE(patrik): Parse Numbers, Power, Paren, Function operations
+
             if (lexer.CurrentToken == TokenType.NUMBER)
             {
+                // Format 1: number
+                //        2: number^number
                 double value = lexer.CurrentNumber;
                 lexer.NextToken();
 
@@ -117,6 +125,7 @@ namespace Calculator
             }
             else if (lexer.CurrentToken == TokenType.MINUS)
             {
+                // Format 1: -number
                 lexer.NextToken();
 
                 double value = lexer.CurrentNumber;
@@ -126,6 +135,7 @@ namespace Calculator
             }
             else if (lexer.CurrentToken == TokenType.OPEN_PAREN)
             {
+                // Format 1: (expr)
                 lexer.NextToken();
 
                 Node result = Parse();
@@ -136,6 +146,8 @@ namespace Calculator
             }
             else if (lexer.CurrentToken == TokenType.IDENTIFIER)
             {
+                // Format 1: identifier
+                //        2: identifier(expr, ...)
                 string identifier = lexer.CurrentIdentifier;
                 lexer.NextToken();
 
@@ -144,11 +156,14 @@ namespace Calculator
                     lexer.NextToken();
 
                     Node node = Parse();
-                    SQRTNode result = new SQRTNode(node);
 
                     lexer.ExpectToken(TokenType.CLOSE_PAREN);
 
-                    return result;
+                    if (identifier.Equals("sqrt", StringComparison.OrdinalIgnoreCase))
+                    {
+                        SQRTNode result = new SQRTNode(node);
+                        return result;
+                    }
                 }
             }
 
@@ -157,6 +172,8 @@ namespace Calculator
 
         public Node ParseMul()
         {
+            // NOTE(patrik): Parse Multiply, Divide and modulo operation
+
             Node left = ParseOperand();
             while (lexer.CurrentToken == TokenType.MULTIPLY ||
                 lexer.CurrentToken == TokenType.DIVIDE ||
@@ -175,6 +192,8 @@ namespace Calculator
 
         public Node ParseAdd()
         {
+            // NOTE(patrik): Parse Plus and minus operations
+
             Node left = ParseMul();
             while (lexer.CurrentToken == TokenType.PLUS ||
                 lexer.CurrentToken == TokenType.MINUS)
