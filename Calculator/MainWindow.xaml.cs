@@ -13,7 +13,7 @@ namespace Calculator
     {
         private const int MAX_CHARACTERS_IN_RESULT = 22;
 
-        private string[,] buttonNames =
+        private readonly string[,] buttonNames =
         {
             { "C",    "",   "<",  ""  },
             { "1",    "2",  "3",  "+" },
@@ -28,7 +28,7 @@ namespace Calculator
 
         private TextBlock resultLabel;
 
-        bool error = false;
+        private bool error = false;
 
         public MainWindow()
         {

@@ -101,6 +101,7 @@ namespace Calculator
                     // NOTE(patrik): Parse an identifier
                     if (char.IsLetter(current))
                     {
+                        // Format 1: Hello_World123
                         builder.Append(current);
 
                         while (ptr < text.Length && (char.IsLetterOrDigit(text[ptr]) || text[ptr] == '_'))
@@ -116,7 +117,8 @@ namespace Calculator
                     // NOTE(patrik): Parse a number
                     else if (char.IsDigit(current))
                     {
-                        // Format: 1: 123 2: 123.3
+                        // Format 1: 123 
+                        //        2: 123.3
                         while (ptr < text.Length && (char.IsDigit(text[ptr]) || text[ptr] == '.'))
                         {
                             ptr++;
